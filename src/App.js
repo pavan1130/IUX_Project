@@ -20,6 +20,7 @@ function App() {
               path="/service-risk-report"
               element={<ServiceRiskReport />}
             />
+            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/report" element={<Report />} />
           </Routes>
