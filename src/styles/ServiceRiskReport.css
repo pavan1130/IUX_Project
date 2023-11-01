@@ -291,7 +291,7 @@ input[type="checkbox"]:checked:hover {
   border-radius: 60px 15px 15px 60px; /* Curved top corners */
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   width: 100%; /* Make the width 100% for responsiveness */
-  max-width: 930px; /* Set a maximum width for large screens */
+  max-width: 1060px; /* Set a maximum width for large screens */
   height: 30px;
   position: fixed;
   top: 520px;
