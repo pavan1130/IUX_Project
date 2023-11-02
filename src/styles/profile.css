@@ -7,10 +7,17 @@
   border-radius: 50%;
   margin-top: 20px;
   height: 120px;
+  position: relative;
 }
-
+.custom-image {
+  width: 82px;
+  height: 84px;
+  position: absolute;
+  top: 5.5%;
+  left: 4.5%;
+}
 .profile-name {
-  margin-top: -37px;
+  margin-top: -20px;
   font-family: Poppins;
   font-size: 16px;
   font-weight: 600;

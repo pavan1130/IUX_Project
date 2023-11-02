@@ -1,20 +1,18 @@
 import React, { useState, useEffect } from "react";
 import "../styles/ServiceRiskReport.css"; // Import the CSS file
-
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFilter } from "@fortawesome/free-solid-svg-icons";
 import speach from "../image/speach.png";
 import { AiOutlineArrowLeft, AiOutlineArrowRight } from "react-icons/ai";
 import { AiOutlineSwapRight } from "react-icons/ai";
 import VoicePopup from "./VoicePopup";
-
+import FaSearchIcon from "../image/search.svg";
+import CustomFilterIcon from "../image/Filters lines.svg";
+import bar from "../image/bar.svg";
+import keys from "../image/keys.svg";
 function ServiceRiskReport() {
   const [filteredData, setFilteredData] = useState([]);
 
   const [isBlinking, setIsBlinking] = useState(false);
   const [search, setSearch] = useState("");
-
-  const [searchQuery, setSearchQuery] = useState("");
 
   const [showPopup, setShowPopup] = useState(false);
   const medicineData = [
@@ -186,79 +184,75 @@ function ServiceRiskReport() {
     },
   ];
 
+  useEffect(() => {
+    if (search.trim() === "") {
+      setFilteredData(medicineData); // Set back to original data if search is empty
+    }
+  }, [search, medicineData]);
 
-useEffect(() => {
-  if (search.trim() === '') {
-    setFilteredData(medicineData); // Set back to original data if search is empty
-  }
-}, [search, medicineData]);
+  const handleVoiceInput = () => {
+    setShowPopup(true);
+    setIsBlinking(!isBlinking);
+    if ("webkitSpeechRecognition" in window) {
+      const recognition = new window.webkitSpeechRecognition();
+      recognition.onresult = (event) => {
+        const speechToText = event.results[0][0].transcript;
+        setSearch(speechToText);
 
+        // Pass the filter keyword directly to filterData function
+        filterData(speechToText);
+        setShowPopup(false);
+      };
+      recognition.start();
+    } else {
+      console.error("Speech recognition is not supported in this browser.");
+    }
+  };
 
-
-const handleVoiceInput = () => {
-  setShowPopup(true); 
-  setIsBlinking(!isBlinking);
-  if ("webkitSpeechRecognition" in window) {
-    const recognition = new window.webkitSpeechRecognition();
-    recognition.onresult = (event) => {
-      const speechToText = event.results[0][0].transcript;
-      setSearch(speechToText);
-
-      // Pass the filter keyword directly to filterData function
-      filterData(speechToText);
-      setShowPopup(false); 
-    };
-    recognition.start();
-  } else {
-    console.error("Speech recognition is not supported in this browser.");
-  }
-};
-
-
-const extractFilterKeyword = (input) => {
-  const keywords = ["equal or below 0", "min target", "min-target", "target max", "target-max", "above max", "above-max","below zero", "zero to min","zero"];
-  const inputLowerCase = input.toLowerCase();
-  return keywords.find(keyword => inputLowerCase.includes(keyword));
-};
-  
-
-
+  const extractFilterKeyword = (input) => {
+    const keywords = [
+      "equal or below 0",
+      "min target",
+      "min-target",
+      "target max",
+      "target-max",
+      "above max",
+      "above-max",
+      "below zero",
+      "zero to min",
+      "zero",
+    ];
+    const inputLowerCase = input.toLowerCase();
+    return keywords.find((keyword) => inputLowerCase.includes(keyword));
+  };
 
   const filterData = (searchValue) => {
     const lowerSearchValue = searchValue.toLowerCase();
     let filteredResults = [];
-  
-    if (lowerSearchValue === '') {
+
+    if (lowerSearchValue === "") {
       filteredResults = [...medicineData]; // Show all data if input is empty
     } else {
-      filteredResults = medicineData.map(medicine => {
-        const newData = medicine.additionalData.map(data => {
+      filteredResults = medicineData.map((medicine) => {
+        const newData = medicine.additionalData.map((data) => {
           if (
-            (lowerSearchValue === 'above max' && data > 100) ||
-            (lowerSearchValue === 'target max' && data >= 59 && data <= 99) ||
-            (lowerSearchValue === 'min target' && data >= 26 && data <= 58) ||
-            (lowerSearchValue === 'zero to min' && data >= 1 && data <= 25) ||
-            (lowerSearchValue === 'below zero' && data === 0)
+            (lowerSearchValue === "above max" && data > 100) ||
+            (lowerSearchValue === "target max" && data >= 59 && data <= 99) ||
+            (lowerSearchValue === "min target" && data >= 26 && data <= 58) ||
+            (lowerSearchValue === "zero to min" && data >= 1 && data <= 25) ||
+            (lowerSearchValue === "below zero" && data === 0)
           ) {
             return data;
           }
           return null;
         });
-  
+
         return { ...medicine, additionalData: newData };
       });
     }
-  
+
     setFilteredData(filteredResults);
   };
-  
-  
-  
-  
-  
-  
-  
-
 
   const handleSearchSubmit = () => {
     const filterKeyword = extractFilterKeyword(search);
@@ -267,29 +261,31 @@ const extractFilterKeyword = (input) => {
     }
   };
 
-  
   const handleButtonClick = () => {
     const filterKeyword = extractFilterKeyword(search);
     if (filterKeyword) {
       filterData(filterKeyword);
     }
   };
+
   return (
     <>
       <div className="service-risk-report">
         <div className="filters">
-          <p>Filters</p>
-          <FontAwesomeIcon icon={faFilter} className="icon" />
+          <img
+            src={CustomFilterIcon}
+            alt="Custom Filter"
+            className="filtericon"
+          />
+          <p className="filter-text">Filters</p>
         </div>
         <div className="search">
-          <input
-            type="text"
-            placeholder="Search"
-            class="search-input"
-            value={searchQuery}
-            // onChange={handleSearchChange}
-          />
-
+          <div className="search-input-container">
+            <div className="search-icon">
+              <img src={FaSearchIcon} alt="Search" />
+            </div>
+            <input type="text" placeholder="Search" className="search-input" />
+          </div>
           <button className="go-button">Go</button>
         </div>
         <div className="dropdowns">
@@ -319,54 +315,69 @@ const extractFilterKeyword = (input) => {
             2023-12-05
           </p>
         </div>
+        <img src={bar} alt="bar" className="bar" />
         <button className="red-button">1 USD = 7 RMB</button>
       </div>
       <div className="serviceRiskReport-container">
-      <table className='serviceRiskReport-table'>
-      <thead>
-        <tr>
-          <th className='grey-heading-border'>Medicine</th>
-          {medicineData[0].dates.map((date, index) => (
-            <th key={index} className='grey-heading-border'>
-              {date}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-      {search && filteredData.length === 0 ? (
-        <tr>
-          <td colSpan={medicineData[0].dates.length + 1} className='no-results'>
-            No results found
-          </td>
-        </tr>
-      ) : (
-        filteredData.map((medicine, index) => (
-          <tr key={index} className={index % 2 === 0 ? 'white-row' : 'light-grey-row'}>
-            <td className='bold-text border medicine-name'>
-              <input type="checkbox" /> {medicine.name}
-            </td>
-            {medicine.additionalData.map((data, index) => (
-              <td key={index} className='border'>
-              <span style={{
-                color:
-                  data >= 0 && data <= 1 ? 'red' :
-                    data >= 2 && data <= 25 ? 'orange' :
-                      data > 26 && data <= 58 ? '#FDD201' :
-                        data > 59 && data < 100 ? '#07DA01' :
-                          data >= 100? 'blue' : ''
-              }}>
-                {data}
-              </span>
-            </td>
-            ))}
-          </tr>
-        ))
-      )}
-    </tbody>
-
-    </table>
+        <table className="serviceRiskReport-table">
+          <thead>
+            <tr>
+              <th className="grey-heading-border">Medicine</th>
+              {medicineData[0].dates.map((date, index) => (
+                <th key={index} className="grey-heading-border">
+                  {date}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {search && filteredData.length === 0 ? (
+              <tr>
+                <td
+                  colSpan={medicineData[0].dates.length + 1}
+                  className="no-results"
+                >
+                  No results found
+                </td>
+              </tr>
+            ) : (
+              filteredData.map((medicine, index) => (
+                <tr
+                  key={index}
+                  className={index % 2 === 0 ? "white-row" : "light-grey-row"}
+                >
+                  <td className="bold-text border medicine-name">
+                    <input type="checkbox" /> {medicine.name}
+                  </td>
+                  {medicine.additionalData.map((data, index) => (
+                    <td key={index} className="border">
+                      <span
+                        style={{
+                          color:
+                            data >= 0 && data <= 1
+                              ? "red"
+                              : data >= 2 && data <= 25
+                              ? "orange"
+                              : data > 26 && data <= 58
+                              ? "#FDD201"
+                              : data > 59 && data < 100
+                              ? "#07DA01"
+                              : data >= 100
+                              ? "blue"
+                              : "",
+                        }}
+                      >
+                        {data}
+                      </span>
+                    </td>
+                  ))}
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
       </div>
+      <img src={keys} alt="key-value" className="key-value" />
       <div className="pagination">
         <button className="previous-btn">
           <span
@@ -380,6 +391,15 @@ const extractFilterKeyword = (input) => {
             Previous
           </span>
         </button>
+        <div className="pagenumber">
+          <p>1</p>
+          <p>2</p>
+          <p>3</p>
+          <p>...</p>
+          <p>8</p>
+          <p>9</p>
+          <p>10</p>
+        </div>
 
         <button className="next-btn">
           <span
@@ -396,16 +416,25 @@ const extractFilterKeyword = (input) => {
       </div>
 
       <div className="container">
-        <img className="image" src={speach} alt="An image"  onClick={handleVoiceInput}/>
-        <input  type="text"
-        placeholder="Type your message..."
-        className="input-field"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}/>
-        <button className="submit-button" onClick={handleButtonClick}>Submit</button>
+        <img
+          className="image"
+          src={speach}
+          alt="An image"
+          onClick={handleVoiceInput}
+        />
+        <input
+          type="text"
+          placeholder="Type your message..."
+          className="input-field"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <button className="submit-button" onClick={handleButtonClick}>
+          Submit
+        </button>
         {showPopup && (
           <div className="voice-popup">
-            <VoicePopup onClose={() => setShowPopup(false)}   />
+            <VoicePopup onClose={() => setShowPopup(false)} />
           </div>
         )}
       </div>

@@ -1,6 +1,6 @@
 aside {
   width: 220px;
-  height: 89vh;
+  height: 92vh;
   display: flex;
   flex-direction: column;
   background-color: #ee2528;
@@ -22,7 +22,6 @@ aside a {
   text-decoration: none;
   -webkit-tap-highlight-color: transparent;
 }
-
 
 aside a:hover {
   color: #f80909;
@@ -80,7 +79,38 @@ body {
   height: 100px;
   position: absolute;
   top: 427px;
-  left: 16px;
+  left: 16px;
 }
 
+.active {
+  background: #fff;
+  color: #8809f8;
+  position: relative;
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+  margin-left: 10px;
+}
 
+.active::after {
+  content: "";
+  position: absolute;
+  background-color: transparent;
+  bottom: 100%;
+  right: 0;
+  height: 35px;
+  width: 35px;
+  border-bottom-right-radius: 18px;
+  box-shadow: 0 20px 0 0 #fff;
+}
+
+.active::before {
+  content: "";
+  position: absolute;
+  background-color: transparent;
+  top: 44px;
+  right: 0;
+  height: 35px;
+  width: 35px;
+  border-top-right-radius: 18px;
+  box-shadow: 0 -20px 0 0 #fff;
+}
